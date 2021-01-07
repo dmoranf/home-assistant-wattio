@@ -1,0 +1,8 @@
+{
+   "domain": "wattio",
+   "name": "Wattio Smart Home integration",
+   "documentation" : "https://github.com/dmoranf/home-assistant-custom-components",
+   "requirements" : [],
+   "dependencies" : [],
+   "codeowners" : "@dmoranf"
+}

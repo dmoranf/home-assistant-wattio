@@ -1,0 +1,6 @@
+{
+  "name": "Wattio",
+  "content_in_root": false,
+  "homeassistant": 0.96,
+  "iot_class": "Cloud Polling"
+}
