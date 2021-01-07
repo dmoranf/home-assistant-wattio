@@ -95,3 +95,4 @@ Vars:
 
 [releases-shield]: https://img.shields.io/github/release/dmoranf/home-assistant-wattio.svg?style=for-the-badge
 [license-shield]: https://img.shields.io/github/license/dmoranf/home-assistant-wattio.svg?style=for-the-badge
+[releases]: https://github.com/dmoranf/home-assistant-wattio/releases
