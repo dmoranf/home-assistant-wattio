@@ -93,3 +93,7 @@ Vars:
 <img src="https://raw.githubusercontent.com/dmoranf/home-assistant-custom-components/master/_screenshots/wattio_config.gif"></p>
 
   
+
+[releases-shield]: https://img.shields.io/github/release/eifinger/here_travel_time.svg?style=for-the-badge
+[commits-shield]: https://img.shields.io/github/commit-activity/y/custom-components/blueprint.svg?style=for-the-badge
+[license-shield]: https://img.shields.io/github/license/eifinger/here_travel_time.svg?style=for-the-badge
