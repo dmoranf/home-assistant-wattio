@@ -69,7 +69,7 @@ class WattioSwitch(WattioDevice, SwitchEntity):
         """Turn On method."""
         wattio = wattioApi(self.hass.data[DOMAIN]["token"])
         # Cambiar a debug
-        _LOGGER.error(
+        _LOGGER.debug(
             "Sending ON request to SWITCH device %s (%s)", self._ieee, self._name
         )
         wattio.set_switch_status(self._ieee, "on", self._devtype)
@@ -80,7 +80,7 @@ class WattioSwitch(WattioDevice, SwitchEntity):
         """Turn Off method."""
         wattio = wattioApi(self.hass.data[DOMAIN]["token"])
         # Cambiar a debug
-        _LOGGER.error(
+        _LOGGER.debug(
             "Sending OFF request to SWITCH device %s (%s)", self._ieee, self._name
         )
         wattio.set_switch_status(self._ieee, "off", self._devtype)
