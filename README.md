@@ -4,7 +4,7 @@
 [![License](https://img.shields.io/github/license/dmoranf/home-assistant-wattio.svg?style=for-the-badge)](https://github.com/dmoranf/home-assistant-wattio/LICENSE)
 [![GitHub Activity](https://img.shields.io/github/commit-activity/y/dmoranf/home-assistant-wattio?style=for-the-badge)](https://github.com/dmoranf/home-assistant-wattio/commits/main)
 
-Wattio Smart Home platform integration for Home Assistant throught Wattio's API. This component is under development. 
+Wattio Smart Home platform integration for Home Assistant throught Wattio's API. This component is *under development*. 
 
 Currently Supported Devices: **Bat, Thermic, Motion, Door, Pod and Siren**
 
@@ -12,7 +12,7 @@ Currently Supported Devices: **Bat, Thermic, Motion, Door, Pod and Siren**
 ### Changelog
 Please check [CHANGELOG.md](https://github.com/dmoranf/home-assistant-wattio/blob/main/custom_components/wattio/CHANGELOG.md) for full details.
 
-## [0.2.6] - 2021-01-07
+## [0.2.6] - 2021-01-11
 ### Added
 - Consumption attribute added to switch entity. Leaving switch independent consumption sensor for backwards compatibility.
 - HACS Support! Now you can install / upgrade this component via HACS :)
