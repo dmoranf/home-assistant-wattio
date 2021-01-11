@@ -6,6 +6,8 @@
 
 Wattio Smart Home platform integration for Home Assistant throught Wattio's API. This component is under development. 
 
+Currently Supported Devices: **Bat, Thermic, Motion, Door, Pod and Siren**
+
 ---
 ### Changelog
 Please check [CHANGELOG.md](https://github.com/dmoranf/home-assistant-wattio/blob/main/custom_components/wattio/CHANGELOG.md) for full details.
@@ -18,17 +20,7 @@ Please check [CHANGELOG.md](https://github.com/dmoranf/home-assistant-wattio/blo
 ### Fixed
 - Some console output (error leven) has been changed to its correct level.
 
-
-### Supported devices
-
-This component currently supports:
-
-- Bat
-- Thermic
-- Motion
-- Door
-- Pod
-- Siren
+---
 
 ### Important Info
 
