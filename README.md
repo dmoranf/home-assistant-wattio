@@ -1,5 +1,5 @@
 # Wattio Smart Home
-[![GitHub Release](https://img.shields.io/github/release/dmoranf/home-assistant-wattio.svg?style=for-the-badge)](https://github.com/dmoranf/home-assistant-wattio/releases()
+[![GitHub Release](https://img.shields.io/github/release/dmoranf/home-assistant-wattio.svg?style=for-the-badge)](https://github.com/dmoranf/home-assistant-wattio/releases)
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge)](https://github.com/custom-components/hacs)
 [![License](https://img.shields.io/github/license/dmoranf/home-assistant-wattio.svg?style=for-the-badge)](LICENSE)
 [![GitHub Activity](https://img.shields.io/github/license/dmoranf/home-assistant-wattio.svg?style=for-the-badge)](https://github.com/dmoranf/home-assistant-wattio/commits/main)
