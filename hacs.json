@@ -8,6 +8,6 @@
 	"switch"
   ],
   "homeassistant": 0.96,
-  "render_readme": True,
+  "render_readme": true,
   "iot_class": "Cloud Polling"
 }
