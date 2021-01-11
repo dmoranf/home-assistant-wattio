@@ -1,6 +1,5 @@
 {
   "name": "Wattio",
-  "content_in_root": false,
   "domains": ["binary_sensor", "sensor", "climate", "switch"],
   "homeassistant": "0.96.0",
   "render_readme": true,
