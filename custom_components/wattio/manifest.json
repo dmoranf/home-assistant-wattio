@@ -4,5 +4,5 @@
    "documentation" : "https://github.com/dmoranf/home-assistant-custom-components",
    "requirements" : [],
    "dependencies" : [],
-   "codeowners" : "@dmoranf"
+   "codeowners" : ["@balloob"]
 }
