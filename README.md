@@ -6,7 +6,7 @@
 
 Wattio Smart Home platform integration for Home Assistant throught Wattio's API. This component is under development, please check [CHANGELOG.md](https://github.com/dmoranf/home-assistant-wattio/blob/main/custom_components/wattio/CHANGELOG.md) for last updates.
 
-[![Wattio SmartHome](https://brands.home-assistant.io/wattio/logo.png | width=50%)](https://wattio.com)
+[![Wattio SmartHome](https://brands.home-assistant.io/wattio/logo.png](https://wattio.com)
 
 ### Supported devices
 
