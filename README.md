@@ -6,6 +6,9 @@
 
 Wattio Smart Home platform integration for Home Assistant throught Wattio's API. This component is *under development*. 
 
+<p align="center">
+<img src="https://raw.githubusercontent.com/dmoranf/home-assistant-wattio/main/_screenshots/wattio_integration.png" width="500px"></p>
+
 Currently Supported Devices: **Bat, Thermic, Motion, Door, Pod and Siren**
 
 ---
@@ -22,33 +25,26 @@ Please check [CHANGELOG.md](https://github.com/dmoranf/home-assistant-wattio/blo
 
 ---
 
-### Important Info
+### Installation
 
-Since Hass 0.96, the way climate devices work has been changed and it is NOT backward compatible. Default (included) climate.py works for HASS versions >= 0.96, but a file called climate.py_pre_096 is available (but not mantained) for use if you are using HASS between 0.92 and 0.96. Just make a backup of climate.py and rename climate.py_pre_096 to climate.py
-
-### Screenshots
-
- - Wattio Sensors (Bat & Thermic examples):
-
-<p align="center">
-<img src="https://raw.githubusercontent.com/dmoranf/home-assistant-custom-components/master/_screenshots/wattio_bat_sensor.png" width="300px">   &nbsp;&nbsp;  <img src="https://raw.githubusercontent.com/dmoranf/home-assistant-custom-components/master/_screenshots/wattio_thermic_sensor.png" width="300px"></p>
-
-- Wattio Binary Sensors (Door example):
-
-<p align="center">
-<img src="https://raw.githubusercontent.com/dmoranf/home-assistant-custom-components/master/_screenshots/wattio_door_sensor.png" width="300px"></p>
-
-- Wattio Switch (Pod example):
-
-<p align="center">
-<img src="https://raw.githubusercontent.com/dmoranf/home-assistant-custom-components/master/_screenshots/wattio_pod_switch.png" width="300px"></p>
-
-### Requisites
+## Pre-Requisites
 
  - Client ID and Secret for Wattio Platform (Request to wattio Support)
  - Works on Home Assistant >= 0.90.2 (Tested on 0.98.2)
+ 
+## HACS (Prefered)
 
-### Installation
+ - Since this repo is not added to HACS defaults repos yey, you hace to add it manually to HACS:
+   - Go to any of the sections (integrations, frontend, automation).
+   - Click on the 3 dots in the top right corner.
+   - Select "Custom repositories"
+   - Add the URL to the repository.
+   - Select the correct category.
+   - Click the "ADD" button.
+- Search for Wattio integration in HACS and install it.
+- Follow adittional configuration steps.
+
+## Manual Installation
 
 - Copy "wattio" folder to your `<config dir>/custom_components/wattio` directory.
 - Configure as shown below.
