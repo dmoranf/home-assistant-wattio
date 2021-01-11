@@ -90,7 +90,7 @@ Vars:
 
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/dmoranf/home-assistant-wattio/master/_screenshots/wattio_config.gif"></p>
+<img src="https://raw.githubusercontent.com/dmoranf/home-assistant-wattio/main/_screenshots/wattio_config.gif"></p>
 
   
 
