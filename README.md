@@ -11,6 +11,8 @@ Wattio Smart Home platform integration for Home Assistant throught Wattio's API.
 
 Currently Supported Devices: **Bat, Thermic, Motion, Door, Pod and Siren**
 
+You can use this devices via *HomeKit* using *Home Assistant's HomeKit bridge* (Bat is not supported right now).
+
 ---
 ### Changelog
 Please check [CHANGELOG.md](https://github.com/dmoranf/home-assistant-wattio/blob/main/custom_components/wattio/CHANGELOG.md) for full details.
