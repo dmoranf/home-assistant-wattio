@@ -32,18 +32,11 @@ Please check [CHANGELOG.md](https://github.com/dmoranf/home-assistant-wattio/blo
 ## Pre-Requisites
 
  - Client ID and Secret for Wattio Platform (Request to wattio Support)
- - Works on Home Assistant >= 0.90.2 (Tested on 0.98.2)
+ - Works on Home Assistant >= 0.90.2 (Tested up to 2021.1.1)
  
 ## HACS (Prefered)
  
- - If you have previously installed this component manually, please remove it, but **keep your wattio.conf file** so you don't have to setup the platform again.
- - Since this repo is not added to HACS defaults repos yey, you hace to add it manually to HACS:
-   - Go to any of the sections (integrations, frontend, automation).
-   - Click on the 3 dots in the top right corner.
-   - Select "Custom repositories"
-   - Add the URL to the repository.
-   - Select the correct category.
-   - Click the "ADD" button.
+- If you have previously installed this component manually, please remove it, but **keep your wattio.conf file** so you don't have to setup the platform again.
 - Search for Wattio integration in HACS and install it.
 - Follow adittional configuration steps.
 
