@@ -1,10 +1,10 @@
 {
    "domain": "wattio",
    "name": "Wattio Smart Home integration",
-   "documentation" : "https://github.com/dmoranf/home-assistant-wattio",
+   "documentation": "https://github.com/dmoranf/home-assistant-wattio",
    "issue_tracker": "https://github.com/dmoranf/home-assistant-wattio/issues"
-   "requirements" : [],
-   "dependencies" : ["configurator", "http"],
-   "after_dependencies" : [], 
-   "codeowners" : ["@dmoranf"]
+   "requirements": [],
+   "dependencies": ["configurator", "http"],
+   "after_dependencies": [], 
+   "codeowners": ["@dmoranf"]
 }
