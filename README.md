@@ -2,6 +2,7 @@
 [![GitHub Release][releases-shield]][releases]
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge)](https://github.com/custom-components/hacs)
 [![License][license-shield]](LICENSE)
+[![GitHub Activity][commits-shield]][commits]
 
 Wattio Smart Home platform integration for Home Assistant throught Wattio's API. This component is under development, please check [CHANGELOG.md](https://github.com/dmoranf/home-assistant-custom-components/blob/master/wattio/CHANGELOG.md) for last updates.
 
@@ -96,3 +97,6 @@ Vars:
 [releases-shield]: https://img.shields.io/github/release/dmoranf/home-assistant-wattio.svg?style=for-the-badge
 [license-shield]: https://img.shields.io/github/license/dmoranf/home-assistant-wattio.svg?style=for-the-badge
 [releases]: https://github.com/dmoranf/home-assistant-wattio/releases
+[GitHub Activity][commits-shield]][commits]
+[commits-shield]: https://img.shields.io/github/commit-activity/y/custom-components/blueprint.svg?style=for-the-badge
+[commits]: https://github.com/dmoranf/home-assistant-wattio/commits/master

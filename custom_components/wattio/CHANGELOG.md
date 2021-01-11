@@ -6,9 +6,16 @@ Join the conversation @ https://community.wattio.com/portal/community/topic/inte
 It seems that Wattio has shutted down the forums, so, feel free to send any comment or request using the issues of this repo!
 
 ## TODO
-- Climate STILL needs more testing !!!
-- HACS repo
 - Configuration via Config Flow 
+- I/O Warning in HASS when triggering switch ON/OFF related to async requests
+
+## [0.2.6] - 2021-01-07
+### Added
+- Consumption attribute added to switch entity. Leaving switch independent consumption sensor for backwards compatibility.
+- HACS Support! Now you can install / upgrade this component via HACS :)
+
+### Fixed
+- Some console output (error leven) has been changed to its correct level.
 
 ## [0.2.5] - 2021-01-06
 ### Added

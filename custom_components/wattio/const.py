@@ -2,7 +2,7 @@
 from homeassistant.const import TEMP_CELSIUS
 
 DOMAIN = "wattio"
-VERSION = "0.2.5"
+VERSION = "0.2.6"
 
 ATTR_ACCESS_TOKEN = "access_token"
 ATTR_CLIENT_ID = "client_id"
