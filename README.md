@@ -33,7 +33,8 @@ Please check [CHANGELOG.md](https://github.com/dmoranf/home-assistant-wattio/blo
  - Works on Home Assistant >= 0.90.2 (Tested on 0.98.2)
  
 ## HACS (Prefered)
-
+ 
+ - If you have previously installed this component manually, please remove it, but **keep your wattio.conf file** so you don't have to setup the platform again.
  - Since this repo is not added to HACS defaults repos yey, you hace to add it manually to HACS:
    - Go to any of the sections (integrations, frontend, automation).
    - Click on the 3 dots in the top right corner.
@@ -89,7 +90,7 @@ Vars:
 
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/dmoranf/home-assistant-custom-components/master/_screenshots/wattio_config.gif"></p>
+<img src="https://raw.githubusercontent.com/dmoranf/home-assistant-wattio/master/_screenshots/wattio_config.gif"></p>
 
   
 
