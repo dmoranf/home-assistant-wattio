@@ -97,6 +97,5 @@ Vars:
 [releases-shield]: https://img.shields.io/github/release/dmoranf/home-assistant-wattio.svg?style=for-the-badge
 [license-shield]: https://img.shields.io/github/license/dmoranf/home-assistant-wattio.svg?style=for-the-badge
 [releases]: https://github.com/dmoranf/home-assistant-wattio/releases
-[GitHub Activity][commits-shield]][commits]
 [commits-shield]: https://img.shields.io/github/commit-activity/y/custom-components/blueprint.svg?style=for-the-badge
-[commits]: https://github.com/dmoranf/home-assistant-wattio/commits/master
+[commits]: https://github.com/dmoranf/home-assistant-wattio/commits/main
