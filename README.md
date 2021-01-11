@@ -4,9 +4,20 @@
 [![License](https://img.shields.io/github/license/dmoranf/home-assistant-wattio.svg?style=for-the-badge)](https://github.com/dmoranf/home-assistant-wattio/LICENSE)
 [![GitHub Activity](https://img.shields.io/github/commit-activity/y/dmoranf/home-assistant-wattio?style=for-the-badge)](https://github.com/dmoranf/home-assistant-wattio/commits/main)
 
-Wattio Smart Home platform integration for Home Assistant throught Wattio's API. This component is under development, please check [CHANGELOG.md](https://github.com/dmoranf/home-assistant-wattio/blob/main/custom_components/wattio/CHANGELOG.md) for last updates.
+Wattio Smart Home platform integration for Home Assistant throught Wattio's API. This component is under development. 
 
-[![Wattio SmartHome](https://brands.home-assistant.io/wattio/logo.png)](https://wattio.com)
+---
+### Changelog
+Please check [CHANGELOG.md](https://github.com/dmoranf/home-assistant-wattio/blob/main/custom_components/wattio/CHANGELOG.md) for full details.
+
+## [0.2.6] - 2021-01-07
+### Added
+- Consumption attribute added to switch entity. Leaving switch independent consumption sensor for backwards compatibility.
+- HACS Support! Now you can install / upgrade this component via HACS :)
+
+### Fixed
+- Some console output (error leven) has been changed to its correct level.
+
 
 ### Supported devices
 
