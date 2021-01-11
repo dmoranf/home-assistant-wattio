@@ -1,8 +1,8 @@
 # Wattio Smart Home
-[![GitHub Release][releases-shield]][releases]
+[![GitHub Release](https://img.shields.io/github/release/dmoranf/home-assistant-wattio.svg?style=for-the-badge)](https://github.com/dmoranf/home-assistant-wattio/releases()
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge)](https://github.com/custom-components/hacs)
-[![License][license-shield]](LICENSE)
-[![GitHub Activity][commits-shield]][commits]
+[![License](https://img.shields.io/github/license/dmoranf/home-assistant-wattio.svg?style=for-the-badge)](LICENSE)
+[![GitHub Activity](https://img.shields.io/github/license/dmoranf/home-assistant-wattio.svg?style=for-the-badge)](https://github.com/dmoranf/home-assistant-wattio/commits/main)
 
 Wattio Smart Home platform integration for Home Assistant throught Wattio's API. This component is under development, please check [CHANGELOG.md](https://github.com/dmoranf/home-assistant-custom-components/blob/master/wattio/CHANGELOG.md) for last updates.
 
@@ -94,8 +94,3 @@ Vars:
 
   
 
-[releases-shield]: https://img.shields.io/github/release/dmoranf/home-assistant-wattio.svg?style=for-the-badge
-[license-shield]: https://img.shields.io/github/license/dmoranf/home-assistant-wattio.svg?style=for-the-badge
-[releases]: https://github.com/dmoranf/home-assistant-wattio/releases
-[commits-shield]: https://img.shields.io/github/commit-activity/y/dmoranf/home-assistant-wattio?style=for-the-badge 
-[commits]: https://github.com/dmoranf/home-assistant-wattio/commits/main
