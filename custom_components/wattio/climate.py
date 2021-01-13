@@ -214,7 +214,7 @@ class WattioThermic(WattioDevice, ClimateEntity):
                     self._current_operation_mode = tempvalue["mode"]
                     self._target_temperature = tempvalue["target"]
                     self._state = tempvalue["state"]
-                    self._state = tempvalue["time"]
+                    self._time = tempvalue["time"]
                     break
             return 0
         return False

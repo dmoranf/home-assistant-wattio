@@ -17,6 +17,10 @@ You can use this devices via *HomeKit* using *Home Assistant's HomeKit bridge* (
 ### Changelog
 Please check [CHANGELOG.md](https://github.com/dmoranf/home-assistant-wattio/blob/main/custom_components/wattio/CHANGELOG.md) for full details.
 
+## [0.2.7] - 2021-01-13
+### Fixed
+- Time attribute of climate was not updating correctly (old file uploaded to the repo)
+
 ## [0.2.6] - 2021-01-11
 ### Added
 - Consumption attribute added to switch entity. Leaving switch independent consumption sensor for backwards compatibility.
