@@ -9,6 +9,10 @@ It seems that Wattio has shutted down the forums, so, feel free to send any comm
 - Configuration via Config Flow 
 - I/O Warning in HASS when triggering switch ON/OFF related to async requests
 
+## [0.2.8] - 2021-01-20
+### Added
+- You can now skip adding some devices to HASS using sensor_exclude config entry
+
 ## [0.2.7] - 2021-01-13
 ### Fixed
 - Time attribute of climate was not updating correctly (old file uploaded to the repo)

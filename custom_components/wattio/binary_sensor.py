@@ -9,7 +9,7 @@ from homeassistant.const import ATTR_BATTERY_LEVEL
 
 from . import WattioDevice
 
-from .const import BINARY_SENSORS, DOMAIN, ICON
+from .const import BINARY_SENSORS, CONF_EXCLUSIONS, DOMAIN, ICON
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -26,10 +26,13 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
         icon = None
         if device["type"] in BINARY_SENSORS:
             icon = ICON[device["type"]]
-            devices.append(
-                WattioBinarySensor(device["name"], device["type"], icon, device["ieee"])
-            )
-            _LOGGER.debug("Adding device: %s", device["name"])
+            if device["ieee"] in hass.data[DOMAIN][CONF_EXCLUSIONS]:
+                _LOGGER.error("Excluding device with IEEE %s", hass.data[DOMAIN][CONF_EXCLUSIONS])
+            else:
+                devices.append(
+                    WattioBinarySensor(device["name"], device["type"], icon, device["ieee"])
+                )
+                _LOGGER.debug("Adding device: %s", device["name"])
 
     async_add_entities(devices)
 

@@ -17,6 +17,10 @@ You can use this devices via *HomeKit* using *Home Assistant's HomeKit bridge* (
 ### Changelog
 Please check [CHANGELOG.md](https://github.com/dmoranf/home-assistant-wattio/blob/main/custom_components/wattio/CHANGELOG.md) for full details.
 
+## [0.2.8] - 2021-01-20
+### Added
+- You can now skip adding some devices to HASS using sensor_exclude config entry
+
 ## [0.2.7] - 2021-01-13
 ### Fixed
 - Time attribute of climate was not updating correctly (old file uploaded to the repo)
@@ -63,6 +67,7 @@ wattio:
     scan_interval: 60
     security: true
     security_interval: 300
+    sensor_exclude: ["ieee1"]
 ```
 
 Vars:
@@ -72,7 +77,7 @@ Vars:
 | *scan_interval* | OPTIONAL - Time (in seconds) between data updates , defaults to 30 seconds |
 | *security* | OPTIONAL - Enable or disable security devices, defaults to False |
 | *security_interval* | OPTIONAL - Time (in seconds) between security devices data updates, defaults to *scan_interval* |
-
+| *sensor_exclude* | OPTIONAL - List with IEEEs to exclude, for example: ["ieee1","ieee2"] |
 
 ### Adittional steps
 

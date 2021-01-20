@@ -29,6 +29,7 @@ from . import WattioDevice, wattioApi
 from .const import (
     DOMAIN,
     CLIMATE,
+    CONF_EXCLUSIONS,
     CONF_MAX_TEMP,
     CONF_MIN_TEMP,
     ICON
@@ -51,18 +52,20 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     # Create Updater Object
     for device in hass.data[DOMAIN]["devices"]:
         if device["type"] in CLIMATE:
-            devices.append(
-                WattioThermic(
-                    device["name"],
-                    device["type"],
-                    ICON[device["type"]],
-                    device["ieee"],
-                    DEFAULT_MIN_TEMP,
-                    DEFAULT_MAX_TEMP
+            if device["ieee"] in hass.data[DOMAIN][CONF_EXCLUSIONS]:
+                _LOGGER.error("Excluding device with IEEE %s", hass.data[DOMAIN][CONF_EXCLUSIONS])
+            else:
+                devices.append(
+                    WattioThermic(
+                        device["name"],
+                        device["type"],
+                        ICON[device["type"]],
+                        device["ieee"],
+                        DEFAULT_MIN_TEMP,
+                        DEFAULT_MAX_TEMP
+                    )
                 )
-            )
-            #_LOGGER.error("AQUI "+str(config.get(CONF_MIN_TEMP)))
-            _LOGGER.debug("Adding device: %s", device["name"])
+                _LOGGER.debug("Adding device: %s", device["name"])
     async_add_entities(devices)
 
 

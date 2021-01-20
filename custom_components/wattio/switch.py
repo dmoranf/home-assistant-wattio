@@ -10,7 +10,7 @@ from homeassistant.const import STATE_ON
 
 from . import WattioDevice, wattioApi
 
-from .const import DOMAIN, ICON, SECURITY, SWITCHES
+from .const import CONF_EXCLUSIONS, DOMAIN, ICON, SECURITY, SWITCHES
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -26,12 +26,15 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     # Create Updater Object
     for device in hass.data[DOMAIN]["devices"]:
         if device["type"] in SWITCHES:
-            devices.append(
-                WattioSwitch(
-                    device["name"], device["type"], ICON[device["type"]], device["ieee"]
+            if device["ieee"] in hass.data[DOMAIN][CONF_EXCLUSIONS]:
+                _LOGGER.error("Excluding device with IEEE %s", hass.data[DOMAIN][CONF_EXCLUSIONS])
+            else:
+                devices.append(
+                    WattioSwitch(
+                        device["name"], device["type"], ICON[device["type"]], device["ieee"]
+                    )
                 )
-            )
-            _LOGGER.debug("Adding device: %s", device["name"])
+                _LOGGER.debug("Adding device: %s", device["name"])
 
         if device["type"] in SECURITY and security_enabled is True:
             devices.append(

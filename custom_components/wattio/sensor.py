@@ -1,16 +1,19 @@
 """Platform for Wattio integration testing."""
 import logging
 
+
 from homeassistant.const import (
     ATTR_BATTERY_LEVEL
 )
 from homeassistant.helpers.entity import Entity
 
+
 from . import WattioDevice
 
-from .const import DOMAIN, ICON, MEASUREMENT, SENSORS
+from .const import CONF_EXCLUSIONS, DOMAIN, ICON, MEASUREMENT, SENSORS
 
 _LOGGER = logging.getLogger(__name__)
+
 
 
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
@@ -26,17 +29,20 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
                 channel = device["channel"]
             else:
                 channel = None
-            devices.append(
-                WattioSensor(
-                    device["name"],
-                    device["type"],
-                    MEASUREMENT[device["type"]],
-                    ICON[device["type"]],
-                    device["ieee"],
-                    channel,
+            if device["ieee"] in hass.data[DOMAIN][CONF_EXCLUSIONS]:
+                _LOGGER.error("Excluding device with IEEE %s", hass.data[DOMAIN][CONF_EXCLUSIONS])
+            else:
+                devices.append(
+                    WattioSensor(
+                        device["name"],
+                        device["type"],
+                        MEASUREMENT[device["type"]],
+                        ICON[device["type"]],
+                        device["ieee"],
+                        channel,
+                    )
                 )
-            )
-            _LOGGER.debug("Adding device: %s", device["name"])
+                _LOGGER.debug("Adding device: %s", device["name"])
 
     async_add_entities(devices)
 

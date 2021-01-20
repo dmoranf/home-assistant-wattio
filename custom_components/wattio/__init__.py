@@ -29,6 +29,7 @@ from .const import (
     ATTR_CLIENT_ID,
     ATTR_CLIENT_SECRET,
     ATTR_LAST_SAVED_AT,
+    CONF_EXCLUSIONS,
     CONF_SECURITY,
     CONF_SECURITY_INTERVAL,
     DATA_UPDATED,
@@ -64,8 +65,9 @@ CONFIGURING = {}
 CONFIG_SCHEMA = vol.Schema(
     {
         DOMAIN: vol.Schema(
-            {vol.Optional(CONF_SECURITY, default=False): cv.boolean},
-            {vol.Optional(CONF_SECURITY_INTERVAL, default=None): cv.positive_int},
+            {vol.Optional(CONF_SECURITY, default=False): cv.boolean,
+            vol.Optional(CONF_SECURITY_INTERVAL, default=None): cv.positive_int,
+            vol.Optional(CONF_EXCLUSIONS, default=[]): vol.All(cv.ensure_list, [cv.string])},
             extra=vol.ALLOW_EXTRA,
         )
     },
@@ -177,6 +179,7 @@ def setup(hass, config):
         hass.data[DOMAIN]["devices"] = apidata.get_devices()
         hass.data[DOMAIN]["token"] = token
         hass.data[DOMAIN]["security_enabled"] = security_enabled
+        hass.data[DOMAIN][CONF_EXCLUSIONS] = config[DOMAIN].get(CONF_EXCLUSIONS)
         # Create Updater Object
         for platform in PLATFORMS:
             load_platform(hass, platform, DOMAIN, {}, config)
