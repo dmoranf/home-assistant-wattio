@@ -22,7 +22,9 @@ from homeassistant.helpers.dispatcher import (
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.event import track_time_interval
+from homeassistant.helpers.network import get_url
 from homeassistant.util.json import load_json, save_json
+
 
 from .const import (
     ATTR_ACCESS_TOKEN,
@@ -66,8 +68,8 @@ CONFIG_SCHEMA = vol.Schema(
     {
         DOMAIN: vol.Schema(
             {vol.Optional(CONF_SECURITY, default=False): cv.boolean,
-            vol.Optional(CONF_SECURITY_INTERVAL, default=None): cv.positive_int,
-            vol.Optional(CONF_EXCLUSIONS, default=[]): vol.All(cv.ensure_list, [cv.string])},
+             vol.Optional(CONF_SECURITY_INTERVAL, default=None): cv.positive_int,
+             vol.Optional(CONF_EXCLUSIONS, default=[]): vol.All(cv.ensure_list, [cv.string])},
             extra=vol.ALLOW_EXTRA,
         )
     },
@@ -118,9 +120,11 @@ def setup(hass, config):
                 if device["type"] == "bat":
                     channelid = 0
                     for _ in device["status"]["consumption"]:
-                        device_id = "s_" + device["ieee"] + "_" + str(channelid)
+                        device_id = "s_" + \
+                            device["ieee"] + "_" + str(channelid)
                         _LOGGER.debug("Updating callback %s", device_id)
-                        async_dispatcher_send(hass, DATA_UPDATED.format(device_id))
+                        async_dispatcher_send(
+                            hass, DATA_UPDATED.format(device_id))
                         channelid = channelid + 1
                 else:
                     # Generate sensors for all devices
@@ -179,23 +183,27 @@ def setup(hass, config):
         hass.data[DOMAIN]["devices"] = apidata.get_devices()
         hass.data[DOMAIN]["token"] = token
         hass.data[DOMAIN]["security_enabled"] = security_enabled
-        hass.data[DOMAIN][CONF_EXCLUSIONS] = config[DOMAIN].get(CONF_EXCLUSIONS)
+        hass.data[DOMAIN][CONF_EXCLUSIONS] = config[DOMAIN].get(
+            CONF_EXCLUSIONS)
         # Create Updater Object
         for platform in PLATFORMS:
             load_platform(hass, platform, DOMAIN, {}, config)
 
-        track_time_interval(hass, poll_wattio_update, timedelta(seconds=update_interval))
+        track_time_interval(hass, poll_wattio_update,
+                            timedelta(seconds=update_interval))
 
         if security_enabled is True:
             _LOGGER.debug("Adding security callbacks")
             track_time_interval(
-                hass, poll_wattio_security_update, timedelta(seconds=security_interval)
+                hass, poll_wattio_security_update, timedelta(
+                    seconds=security_interval)
             )
         return True
     # Not Authorized, need to complete OAUTH2 process
     auth_uri = get_auth_uri(hass, config_file.get("client_id"))
-    start_uri = "{}{}".format(hass.config.api.base_url, WATTIO_AUTH_START)
-    _LOGGER.error("No token configured, complete OAUTH2 authorization: %s", auth_uri)
+    start_uri = "{}{}".format(get_url(hass), WATTIO_AUTH_START)
+    _LOGGER.error(
+        "No token configured, complete OAUTH2 authorization: %s", auth_uri)
     hass.http.register_view(
         WattioRegisterView(
             hass,
@@ -264,7 +272,7 @@ def request_oauth_completion(hass, config, auth_uri, setup):
         )
         return
 
-    start_url = "{}{}".format(hass.config.api.base_url, WATTIO_AUTH_START)
+    start_url = "{}{}".format(get_url(hass), WATTIO_AUTH_START)
     description = 'Para finalizar autoriza el componente en Wattio:<br /><br /> <a href="{}" target="_blank">{}</a>'.format(
         start_url, start_url
     )
@@ -279,7 +287,7 @@ def request_oauth_completion(hass, config, auth_uri, setup):
 def get_auth_uri(hass, client_id):
     """Return Wattio Auth URI."""
     # state = "WATTIOHASSIOTESTING2" # Change to RANDOM
-    redirect_uri = "{}{}".format(hass.config.api.base_url, WATTIO_AUTH_START)
+    redirect_uri = "{}{}".format(get_url(hass), WATTIO_AUTH_START)
     authorize_uri = (
         WATTIO_AUTH_URI
         + "?response_type=code&client_id="
@@ -341,7 +349,7 @@ class WattioRegisterView(HomeAssistantView):
             text += """<p>Por favor, <a href="{}">autoriza a Home Assistant</a> para que pueda acceder a la informacion de WATTIO</p>
                 """.format(
                     self.auth_uri
-                )
+            )
             return web.Response(text=text, content_type="text/html")
         api = wattioApi()
         token = api.get_token(
@@ -358,7 +366,8 @@ class WattioRegisterView(HomeAssistantView):
                 ATTR_LAST_SAVED_AT: int(time.time()),
             }
             try:
-                save_json(self.hass.config.path(WATTIO_CONF_FILE), config_contents)
+                save_json(self.hass.config.path(
+                    WATTIO_CONF_FILE), config_contents)
 
                 return web.Response(text="Autorizado :)")
             except:
@@ -380,7 +389,8 @@ class WattioDevice(Entity):
     async def async_added_to_hass(self):
         """Add Callbacks for update."""
         if self._devtype == "bat" and self._channel is not None:
-            device_id = str(self._pre) + str(self._ieee) + "_" + str(self._channel)
+            device_id = str(self._pre) + str(self._ieee) + \
+                "_" + str(self._channel)
         else:
             device_id = str(self._pre) + str(self._ieee)
         _LOGGER.debug(
@@ -388,7 +398,8 @@ class WattioDevice(Entity):
             DATA_UPDATED.format(device_id),
             DATA_UPDATED.format(self._name),
         )
-        async_dispatcher_connect(self.hass, DATA_UPDATED.format(device_id), self._refresh)
+        async_dispatcher_connect(
+            self.hass, DATA_UPDATED.format(device_id), self._refresh)
 
     @callback
     def _refresh(self):
@@ -454,9 +465,11 @@ class wattioApi:
                 WATTIO_STATUS_URI, headers=api_call_headers
             )
             if api_call_response.status_code == 200:
-                _LOGGER.debug("API call status code %s", api_call_response.status_code)
+                _LOGGER.debug("API call status code %s",
+                              api_call_response.status_code)
                 return api_call_response.text
-            _LOGGER.error("API call Status code %s", api_call_response.status_code)
+            _LOGGER.error("API call Status code %s",
+                          api_call_response.status_code)
             return None
         except requests.exceptions.RequestException as err:
             _LOGGER.error("Couldn't get device status data from Wattio API")
@@ -481,22 +494,26 @@ class wattioApi:
             )
             return None
         except requests.exceptions.RequestException as err:
-            _LOGGER.error("Couldn't get security device status data from Wattio API")
+            _LOGGER.error(
+                "Couldn't get security device status data from Wattio API")
             _LOGGER.error(err)
             return None
 
     def set_security_device_status(self, devtype, ieee, status):
         """Change security appliance status on / off."""
-        _LOGGER.debug("Security Status change for %s - %s", str(ieee), str(status))
+        _LOGGER.debug("Security Status change for %s - %s",
+                      str(ieee), str(status))
         _LOGGER.debug("Peticion API Security")
         api_call_headers = {"Authorization": "Bearer " + self._token}
         try:
-            uri = WATTIO_SEC_SET_URI.format(str(devtype), str(ieee), str(status))
+            uri = WATTIO_SEC_SET_URI.format(
+                str(devtype), str(ieee), str(status))
             api_call_response = requests.put(uri, headers=api_call_headers)
             _LOGGER.debug(api_call_response.text)
             return 1 if status == "on" else 0
         except requests.exceptions.RequestException as err:
-            _LOGGER.error("Couldn't change device security status data from Wattio API")
+            _LOGGER.error(
+                "Couldn't change device security status data from Wattio API")
             _LOGGER.error(err)
 
     def set_switch_status(self, ieee, status, devtype="pod"):
