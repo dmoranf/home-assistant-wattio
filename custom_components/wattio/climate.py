@@ -8,6 +8,8 @@ try:
 except ImportError:
     from homeassistant.components.climate import ClimateDevice as ClimateEntity
 
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
+
 from homeassistant.components.climate import PLATFORM_SCHEMA
 from homeassistant.components.climate.const import (
     SUPPORT_TARGET_TEMPERATURE,
@@ -176,8 +178,8 @@ class WattioThermic(WattioDevice, ClimateEntity):
         """Set manual temperature."""
         temperature = kwargs.get(ATTR_TEMPERATURE)
         _LOGGER.debug("Set target temperature to %s", temperature)
-        wattio = wattioApi(self.hass.data[DOMAIN]["token"])
-        wattio.set_thermic_temp(self._ieee, temperature)
+        wattio = wattioApi(self.hass.data[DOMAIN]["token"], async_get_clientsession(self.hass))
+        await wattio.async_set_thermic_temp(self._ieee, temperature)
         self._target_temperature = temperature
         self.schedule_update_ha_state()
 
@@ -191,8 +193,8 @@ class WattioThermic(WattioDevice, ClimateEntity):
         else:
             operation_value = 0
         _LOGGER.debug("set operation mode to %s: %s", operation_value, hvac_mode)
-        wattio = wattioApi(self.hass.data[DOMAIN]["token"])
-        wattio.set_thermic_mode(self._ieee, operation_value)
+        wattio = wattioApi(self.hass.data[DOMAIN]["token"], async_get_clientsession(self.hass))
+        await wattio.async_set_thermic_mode(self._ieee, operation_value)
         self._current_operation_mode = operation_value
         self.schedule_update_ha_state()
 

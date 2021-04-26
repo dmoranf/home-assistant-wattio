@@ -5,11 +5,14 @@ import os
 import sys
 import time
 from datetime import timedelta
-import voluptuous as vol
 
 import requests
 
-from aiohttp import web
+import voluptuous as vol
+
+import aiohttp
+import asyncio
+
 from homeassistant.components.http import HomeAssistantView
 from homeassistant.const import CONF_SCAN_INTERVAL
 from homeassistant.core import callback
@@ -20,6 +23,7 @@ from homeassistant.helpers.dispatcher import (
 )
 
 import homeassistant.helpers.config_validation as cv
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.event import track_time_interval
 from homeassistant.helpers.network import get_url
@@ -41,26 +45,21 @@ from .const import (
     SECURITY,
     VERSION,
     WATTIO_AUTH_START,
-    WATTIO_AUTH_CALLBACK_PATH,
     WATTIO_CONF_FILE,
+    WATTIO_STATUS_URI,
+    WATTIO_DEVICES_URI,
+    WATTIO_TOKEN_URI,
+    WATTIO_POD_URI,
+    WATTIO_SIREN_URI,
+    WATTIO_THERMIC_MODE_URI,
+    WATTIO_THERMIC_TEMP_URI,
+    WATTIO_SEC_STATUS_URI,
+    WATTIO_SEC_SET_URI,
+    WATTIO_AUTH_URI,
+    WATTIO_TOKEN_URI
 )
 
-# Component Version
-
 _LOGGER = logging.getLogger(__name__)
-
-WATTIO_STATUS_URI = "https://api.wattio.com/public/v1/appliances/status"
-WATTIO_DEVICES_URI = "https://api.wattio.com/public/v1/appliances"
-WATTIO_TOKEN_URI = "https://api.wattio.com/public/oauth2/token"
-WATTIO_POD_URI = "https://api.wattio.com/public/v1/appliances/pod/{}/{}"
-WATTIO_SIREN_URI = "https://api.wattio.com/public/v1/appliances/siren/{}/{}"
-WATTIO_THERMIC_MODE_URI = "https://api.wattio.com/public/v1/appliances/therm/{}/mode/{}"
-WATTIO_THERMIC_TEMP_URI = "https://api.wattio.com/public/v1/appliances/therm/{}/target/{}"
-WATTIO_SEC_STATUS_URI = "https://api.wattio.com/public/v1/security/{}/{}"
-WATTIO_SEC_SET_URI = "https://api.wattio.com/public/v1/security/{}/{}/{}"
-WATTIO_AUTH_URI = "https://api.wattio.com/public/oauth2/authorize"
-WATTIO_TOKEN_URI = "https://api.wattio.com/public/oauth2/token"
-
 
 CONFIGURING = {}
 
@@ -86,7 +85,7 @@ def setup(hass, config):
     else:
         security_interval = config[DOMAIN].get(CONF_SECURITY_INTERVAL)
 
-    _LOGGER.debug(
+    _LOGGER.info(
         "=> Wattio platform v%s started | Update Interval %s seconds | Security Interval %s seconds <=",
         VERSION,
         update_interval,
@@ -103,7 +102,7 @@ def setup(hass, config):
                     device["ieee"],
                 )
                 device_id = "sec_" + device["ieee"]
-                hass.data[DOMAIN][device_id] = apidata.get_security_device_status(
+                hass.data[DOMAIN][device_id] = apidata.async_get_security_device_status(
                     device["type"], device["ieee"]
                 )
                 async_dispatcher_send(hass, DATA_UPDATED.format(device_id))
@@ -177,7 +176,8 @@ def setup(hass, config):
     # Wattio Token does not expire
     # expires_at = config_file.get(ATTR_LAST_SAVED_AT)
     if token is not None:
-        apidata = wattioApi(token)
+        session = async_get_clientsession(hass)
+        apidata = wattioApi(token, session)
         hass.data[DOMAIN] = {}
         hass.data[DOMAIN]["data"] = None
         hass.data[DOMAIN]["devices"] = apidata.get_devices()
@@ -351,7 +351,8 @@ class WattioRegisterView(HomeAssistantView):
                     self.auth_uri
             )
             return web.Response(text=text, content_type="text/html")
-        api = wattioApi()
+        session = async_get_clientsession(self.hass)
+        api = wattioApi(None, session)
         token = api.get_token(
             str(data.get("code")),
             str(self.client_id),
@@ -409,11 +410,29 @@ class WattioDevice(Entity):
 class wattioApi:
     """Wattio API Class to retrieve data."""
 
-    def __init__(self, token=None):
+    def __init__(self, token=None, session=None):
         """Init function."""
         self._value = None
         self._data = None
         self._token = token
+        self._session = session
+        self._headers = {"Authorization": "Bearer " + self._token}
+
+    async def async_api_request(self, httpmethod, uri, output=False):
+        try:
+            async with getattr(self._session, httpmethod)(uri, headers=self._headers) as api_call_response:
+                _LOGGER.debug(str(uri) + " - Response Code:" +
+                              str(api_call_response.status))
+                if output:
+                    return api_call_response.text
+                return 1
+        except (aiohttp.ClientConnectorError, aiohttp.ClientResponseError) as err:
+            _LOGGER.error(
+                "Error getting response from Wattio API")
+            _LOGGER.error(err)
+            if output:
+                return None
+            return 0
 
     def get_token(self, code, client_id, client_secret, redirect_uri):
         """Get Token from Wattio API, requieres Auth Code, Client ID and Secret."""
@@ -445,24 +464,21 @@ class wattioApi:
 
     def get_devices(self):
         """Get device info from Wattio API."""
-        api_call_headers = {"Authorization": "Bearer " + self._token}
         try:
             api_call_response = requests.get(
-                WATTIO_DEVICES_URI, headers=api_call_headers
+                WATTIO_DEVICES_URI, headers=self._headers
             )
             registered_devices = json.loads(api_call_response.text)
             return registered_devices
         except requests.exceptions.RequestException as err:
             _LOGGER.error("Couldn't get device info from Wattio API")
             _LOGGER.error(err)
-            return None
 
     def update_wattio_data(self):
         """Get Data from WattioApi."""
-        api_call_headers = {"Authorization": "Bearer " + self._token}
         try:
             api_call_response = requests.get(
-                WATTIO_STATUS_URI, headers=api_call_headers
+                WATTIO_STATUS_URI, headers=self._headers
             )
             if api_call_response.status_code == 200:
                 _LOGGER.debug("API call status code %s",
@@ -476,47 +492,24 @@ class wattioApi:
             _LOGGER.error(err)
             return None
 
-    def get_security_device_status(self, devtype, ieee):
+    async def async_get_security_device_status(self, devtype, ieee):
         """Gets Security appliances status."""
-        api_call_headers = {"Authorization": "Bearer " + self._token}
-        try:
-            uri = WATTIO_SEC_STATUS_URI.format(str(devtype), str(ieee))
-            api_call_response = requests.get(uri, headers=api_call_headers)
-            if api_call_response.status_code == 200:
-                _LOGGER.debug(
-                    "API security call status code %s", api_call_response.status_code
-                )
-                return api_call_response.text
-            if api_call_response.status_code == 404:
-                return False
-            _LOGGER.error(
-                "API security call Status code %s", api_call_response.status_code
-            )
-            return None
-        except requests.exceptions.RequestException as err:
-            _LOGGER.error(
-                "Couldn't get security device status data from Wattio API")
-            _LOGGER.error(err)
-            return None
+        uri = WATTIO_SEC_STATUS_URI.format(str(devtype), str(ieee))
+        response = await self.async_api_request("get", uri, True)
+        return response
 
-    def set_security_device_status(self, devtype, ieee, status):
+    async def async_set_security_device_status(self, devtype, ieee, status):
         """Change security appliance status on / off."""
         _LOGGER.debug("Security Status change for %s - %s",
                       str(ieee), str(status))
-        _LOGGER.debug("Peticion API Security")
-        api_call_headers = {"Authorization": "Bearer " + self._token}
-        try:
-            uri = WATTIO_SEC_SET_URI.format(
-                str(devtype), str(ieee), str(status))
-            api_call_response = requests.put(uri, headers=api_call_headers)
-            _LOGGER.debug(api_call_response.text)
+        uri = WATTIO_SEC_SET_URI.format(
+            str(devtype), str(ieee), str(status))
+        response = await self.async_api_request("put", uri)
+        if response == 1:
             return 1 if status == "on" else 0
-        except requests.exceptions.RequestException as err:
-            _LOGGER.error(
-                "Couldn't change device security status data from Wattio API")
-            _LOGGER.error(err)
+        return response
 
-    def set_switch_status(self, ieee, status, devtype="pod"):
+    async def async_set_switch_status(self, ieee, status, devtype="pod"):
         """Change switch status on / off."""
         if devtype == "pod":
             wattio_uri = WATTIO_POD_URI
@@ -524,40 +517,22 @@ class wattioApi:
             wattio_uri = WATTIO_SIREN_URI
         _LOGGER.debug("Status change for %s - %s", str(ieee), str(status))
         _LOGGER.debug("Peticion API")
-        api_call_headers = {"Authorization": "Bearer " + self._token}
-        try:
-            uri = wattio_uri.format(str(ieee), str(status))
-            api_call_response = requests.put(uri, headers=api_call_headers)
-            _LOGGER.debug(api_call_response.text)
+        uri = wattio_uri.format(str(ieee), str(status))
+        response = await self.async_api_request("put", uri)
+        if response == 1:
             return 1 if status == "on" else 0
-        except requests.exceptions.RequestException as err:
-            _LOGGER.error("Couldn't change device status data from Wattio API")
-            _LOGGER.error(err)
+        return response
 
-    def set_thermic_temp(self, ieee, temp):
+    async def async_set_thermic_temp(self, ieee, temp):
         """Change thermic target temp."""
         _LOGGER.debug("Updated request for %s - %s", str(ieee), str(temp))
-        api_call_headers = {"Authorization": "Bearer " + self._token}
-        try:
-            uri = WATTIO_THERMIC_TEMP_URI.format(str(ieee), str(temp))
-            api_call_response = requests.put(uri, headers=api_call_headers)
-            _LOGGER.debug(api_call_response.text)
-            return 1
-        except requests.exceptions.RequestException as err:
-            _LOGGER.error("Couldn't change device status data from Wattio API")
-            _LOGGER.error(err)
-            return 0
+        uri = WATTIO_THERMIC_TEMP_URI.format(str(ieee), str(temp))
+        response = await self.async_api_request("put", uri)
+        return response
 
-    def set_thermic_mode(self, ieee, status):
+    async def async_set_thermic_mode(self, ieee, status):
         """Change thermic working mode."""
         _LOGGER.debug("Updated request for %s - %s", str(ieee), str(status))
-        api_call_headers = {"Authorization": "Bearer " + self._token}
-        try:
-            uri = WATTIO_THERMIC_MODE_URI.format(str(ieee), str(status))
-            api_call_response = requests.put(uri, headers=api_call_headers)
-            _LOGGER.debug(api_call_response.text)
-            return 1
-        except requests.exceptions.RequestException as err:
-            _LOGGER.error("Couldn't change device status data from Wattio API")
-            _LOGGER.error(err)
-            return 0
+        uri = WATTIO_THERMIC_MODE_URI.format(str(ieee), str(status))
+        response = await self.async_api_request("put", uri)
+        return response
