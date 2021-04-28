@@ -109,7 +109,7 @@ def setup(hass, config):
 
     def poll_wattio_update(event_time):
         _LOGGER.debug("Scheduled device status update running ...")
-        data = apidata.update_wattio_data()
+        data = asyncio.run_coroutine_threadsafe(apidata.async_update_wattio_data(), hass.loop).result()
         _LOGGER.debug("API response data: %s", data)
         if data is not None:
             json_data = json.loads(data)
@@ -180,7 +180,7 @@ def setup(hass, config):
         apidata = wattioApi(token, session)
         hass.data[DOMAIN] = {}
         hass.data[DOMAIN]["data"] = None
-        hass.data[DOMAIN]["devices"] = apidata.get_devices()
+        hass.data[DOMAIN]["devices"] = asyncio.run_coroutine_threadsafe(apidata.async_get_devices(), hass.loop).result()
         hass.data[DOMAIN]["token"] = token
         hass.data[DOMAIN]["security_enabled"] = security_enabled
         hass.data[DOMAIN][CONF_EXCLUSIONS] = config[DOMAIN].get(
@@ -424,7 +424,8 @@ class wattioApi:
                 _LOGGER.debug(str(uri) + " - Response Code:" +
                               str(api_call_response.status))
                 if output:
-                    return api_call_response.text
+                    data = await api_call_response.text()
+                    return data
                 return 1
         except (aiohttp.ClientConnectorError, aiohttp.ClientResponseError) as err:
             _LOGGER.error(
@@ -462,35 +463,16 @@ class wattioApi:
             _LOGGER.error("Could't get TOKEN from Wattio API")
             _LOGGER.error(err)
 
-    def get_devices(self):
+    async def async_get_devices(self):
         """Get device info from Wattio API."""
-        try:
-            api_call_response = requests.get(
-                WATTIO_DEVICES_URI, headers=self._headers
-            )
-            registered_devices = json.loads(api_call_response.text)
-            return registered_devices
-        except requests.exceptions.RequestException as err:
-            _LOGGER.error("Couldn't get device info from Wattio API")
-            _LOGGER.error(err)
+        response = await self.async_api_request("get", WATTIO_DEVICES_URI, True)
+        registered_devices = json.loads(response)
+        return registered_devices
 
-    def update_wattio_data(self):
+    async def async_update_wattio_data(self):
         """Get Data from WattioApi."""
-        try:
-            api_call_response = requests.get(
-                WATTIO_STATUS_URI, headers=self._headers
-            )
-            if api_call_response.status_code == 200:
-                _LOGGER.debug("API call status code %s",
-                              api_call_response.status_code)
-                return api_call_response.text
-            _LOGGER.error("API call Status code %s",
-                          api_call_response.status_code)
-            return None
-        except requests.exceptions.RequestException as err:
-            _LOGGER.error("Couldn't get device status data from Wattio API")
-            _LOGGER.error(err)
-            return None
+        response = await self.async_api_request("get", WATTIO_STATUS_URI, True)
+        return response
 
     async def async_get_security_device_status(self, devtype, ieee):
         """Gets Security appliances status."""
