@@ -109,7 +109,8 @@ def setup(hass, config):
 
     def poll_wattio_update(event_time):
         _LOGGER.debug("Scheduled device status update running ...")
-        data = asyncio.run_coroutine_threadsafe(apidata.async_update_wattio_data(), hass.loop).result()
+        data = asyncio.run_coroutine_threadsafe(
+            apidata.async_update_wattio_data(), hass.loop).result()
         _LOGGER.debug("API response data: %s", data)
         if data is not None:
             json_data = json.loads(data)
@@ -180,7 +181,8 @@ def setup(hass, config):
         apidata = wattioApi(token, session)
         hass.data[DOMAIN] = {}
         hass.data[DOMAIN]["data"] = None
-        hass.data[DOMAIN]["devices"] = asyncio.run_coroutine_threadsafe(apidata.async_get_devices(), hass.loop).result()
+        hass.data[DOMAIN]["devices"] = asyncio.run_coroutine_threadsafe(
+            apidata.async_get_devices(), hass.loop).result()
         hass.data[DOMAIN]["token"] = token
         hass.data[DOMAIN]["security_enabled"] = security_enabled
         hass.data[DOMAIN][CONF_EXCLUSIONS] = config[DOMAIN].get(
