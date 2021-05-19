@@ -15,7 +15,6 @@ from . import WattioDevice, wattioApi
 from .const import CONF_EXCLUSIONS, DOMAIN, ICON, SECURITY, SWITCHES
 
 
-
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -31,11 +30,13 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     for device in hass.data[DOMAIN]["devices"]:
         if device["type"] in SWITCHES:
             if device["ieee"] in hass.data[DOMAIN][CONF_EXCLUSIONS]:
-                _LOGGER.error("Excluding device with IEEE %s", hass.data[DOMAIN][CONF_EXCLUSIONS])
+                _LOGGER.error("Excluding device with IEEE %s",
+                              hass.data[DOMAIN][CONF_EXCLUSIONS])
             else:
                 devices.append(
                     WattioSwitch(
-                        device["name"], device["type"], ICON[device["type"]], device["ieee"]
+                        device["name"], device["type"], ICON[device["type"]
+                                                             ], device["ieee"]
                     )
                 )
                 _LOGGER.debug("Adding device: %s", device["name"])
@@ -74,7 +75,8 @@ class WattioSwitch(WattioDevice, SwitchEntity):
 
     async def async_turn_on(self):
         """Turn On method."""
-        wattio = wattioApi(self.hass.data[DOMAIN]["token"], async_get_clientsession(self.hass))
+        wattio = wattioApi(
+            self.hass.data[DOMAIN]["token"], async_get_clientsession(self.hass))
         # Cambiar a debug
         _LOGGER.debug(
             "Sending ON request to SWITCH device %s (%s)", self._ieee, self._name
@@ -85,7 +87,8 @@ class WattioSwitch(WattioDevice, SwitchEntity):
 
     async def async_turn_off(self):
         """Turn Off method."""
-        wattio = wattioApi(self.hass.data[DOMAIN]["token"], async_get_clientsession(self.hass))
+        wattio = wattioApi(
+            self.hass.data[DOMAIN]["token"], async_get_clientsession(self.hass))
         # Cambiar a debug
         _LOGGER.debug(
             "Sending OFF request to SWITCH device %s (%s)", self._ieee, self._name
@@ -119,7 +122,8 @@ class WattioSwitch(WattioDevice, SwitchEntity):
     @property
     def available(self):
         """Return availability."""
-        _LOGGER.debug("Device %s - availability: %s", self._name, self._available)
+        _LOGGER.debug("Device %s - availability: %s",
+                      self._name, self._available)
         return True if self._available == 1 else False
 
     async def async_update(self):
@@ -179,7 +183,8 @@ class WattioSecurity(WattioDevice, SwitchEntity):
 
     async def async_turn_on(self):
         """Turn On method."""
-        wattio = wattioApi(self.hass.data[DOMAIN]["token"], async_get_clientsession(self.hass))
+        wattio = wattioApi(
+            self.hass.data[DOMAIN]["token"], async_get_clientsession(self.hass))
         _LOGGER.debug(
             "Sending ON request to SECURITY device %s (%s)", self._ieee, self._name
         )
@@ -189,7 +194,8 @@ class WattioSecurity(WattioDevice, SwitchEntity):
 
     async def async_turn_off(self):
         """Turn Off method."""
-        wattio = wattioApi(self.hass.data[DOMAIN]["token"], async_get_clientsession(self.hass))
+        wattio = wattioApi(
+            self.hass.data[DOMAIN]["token"], async_get_clientsession(self.hass))
         _LOGGER.debug(
             "Sending OFF request to SECURITY device %s (%s)", self._ieee, self._name
         )
@@ -215,7 +221,8 @@ class WattioSecurity(WattioDevice, SwitchEntity):
     @property
     def available(self):
         """Return availability."""
-        _LOGGER.debug("Device %s - availability: %s", self._name, self._available)
+        _LOGGER.debug("SECURITY Device %s - availability: %s",
+                      self._name, self._available)
         return True if self._available == 1 else False
 
     async def async_update(self):

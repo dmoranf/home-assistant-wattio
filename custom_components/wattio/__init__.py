@@ -6,8 +6,6 @@ import sys
 import time
 from datetime import timedelta
 
-import requests
-
 import voluptuous as vol
 
 import aiohttp
@@ -335,7 +333,7 @@ class WattioRegisterView(HomeAssistantView):
         self.hass = hass
 
     @callback
-    def get(self, request):
+    async def get(self, request):
         """Oauth2 completion View."""
         data = request.query
         text = "<h2>WATTIO</h2>"
@@ -345,17 +343,17 @@ class WattioRegisterView(HomeAssistantView):
             text += "Acceso previamente autorizado, si necesitar volver a actualizarlo borra el fichero {} y vuelve a iniciar el proceso.".format(
                 self.hass.config.path(WATTIO_CONF_FILE)
             )
-            return web.Response(text=text, content_type="text/html")
+            return aiohttp.web.Response(text=text, content_type="text/html")
         if data.get("code") is None:
             _LOGGER.error("SIN AUTORIZAR")
             text += """<p>Por favor, <a href="{}">autoriza a Home Assistant</a> para que pueda acceder a la informacion de WATTIO</p>
                 """.format(
                     self.auth_uri
             )
-            return web.Response(text=text, content_type="text/html")
+            return aiohttp.web.Response(text=text, content_type="text/html")
         session = async_get_clientsession(self.hass)
         api = wattioApi(None, session)
-        token = api.get_token(
+        token = await api.async_get_token(
             str(data.get("code")),
             str(self.client_id),
             str(self.client_secret),
@@ -372,14 +370,14 @@ class WattioRegisterView(HomeAssistantView):
                 save_json(self.hass.config.path(
                     WATTIO_CONF_FILE), config_contents)
 
-                return web.Response(text="Autorizado :)")
+                return aiohttp.web.Response(text="Autorizado :)")
             except:
                 _LOGGER.error("Error guardando TOKEN %s ", sys.exc_info()[0])
-                return web.Response(
+                return aiohttp.web.Response(
                     text="No se ha podido almacenar TOKEN revisar permisos"
                 )
         else:
-            return web.Response(text="Algo fue un poco mal :/")
+            return aiohttp.web.Response(text="Algo fue un poco mal :/")
 
 
 class WattioDevice(Entity):
@@ -418,11 +416,14 @@ class wattioApi:
         self._data = None
         self._token = token
         self._session = session
-        self._headers = {"Authorization": "Bearer " + self._token}
+        self._headers = None
 
-    async def async_api_request(self, httpmethod, uri, output=False):
+        if self._token is not None:
+            self._headers = {"Authorization": "Bearer " + self._token}
+
+    async def async_api_request(self, httpmethod, uri, output=False, payload=None):
         try:
-            async with getattr(self._session, httpmethod)(uri, headers=self._headers) as api_call_response:
+            async with getattr(self._session, httpmethod)(uri, headers=self._headers, data=payload) as api_call_response:
                 _LOGGER.debug(str(uri) + " - Response Code:" +
                               str(api_call_response.status))
                 if output:
@@ -437,8 +438,7 @@ class wattioApi:
                 return None
             return 0
 
-    def get_token(self, code, client_id, client_secret, redirect_uri):
-        """Get Token from Wattio API, requieres Auth Code, Client ID and Secret."""
+    async def async_get_token(self, code, client_id, client_secret, redirect_uri):
         data = {
             "code": code,
             "client_id": client_id,
@@ -446,45 +446,41 @@ class wattioApi:
             "grant_type": "authorization_code",
             "redirect_uri": redirect_uri,
         }
-        try:
-            access_token_response = requests.post(
-                WATTIO_TOKEN_URI, data=data, allow_redirects=False
-            )
-            if "404" in access_token_response.text:
-                _LOGGER.error("Token expired, restart the process")
-                return 0
+        response = await self.async_api_request("post", WATTIO_TOKEN_URI, True, data)
+        if response:
             try:
-                token_json = json.loads(access_token_response.text)
+                token_json = json.loads(response)
                 token = token_json["access_token"]
                 self._token = token
                 return token
             except:
                 _LOGGER.error("Error getting token")
                 return 0
-        except requests.exceptions.RequestException as err:
-            _LOGGER.error("Could't get TOKEN from Wattio API")
-            _LOGGER.error(err)
 
     async def async_get_devices(self):
         """Get device info from Wattio API."""
         response = await self.async_api_request("get", WATTIO_DEVICES_URI, True)
         registered_devices = json.loads(response)
+        _LOGGER.debug("Wattio registered devices:")
+        _LOGGER.debug(registered_devices)
         return registered_devices
 
     async def async_update_wattio_data(self):
         """Get Data from WattioApi."""
         response = await self.async_api_request("get", WATTIO_STATUS_URI, True)
+        _LOGGER.debug("Wattio STATUS data: " + str(response))
         return response
 
     async def async_get_security_device_status(self, devtype, ieee):
         """Gets Security appliances status."""
         uri = WATTIO_SEC_STATUS_URI.format(str(devtype), str(ieee))
         response = await self.async_api_request("get", uri, True)
+        _LOGGER.debug("Wattio SECURITY STATUS data: "+str(response))
         return response
 
     async def async_set_security_device_status(self, devtype, ieee, status):
         """Change security appliance status on / off."""
-        _LOGGER.debug("Security Status change for %s - %s",
+        _LOGGER.debug("SECURITY Status change for %s - %s",
                       str(ieee), str(status))
         uri = WATTIO_SEC_SET_URI.format(
             str(devtype), str(ieee), str(status))
@@ -500,7 +496,6 @@ class wattioApi:
         else:
             wattio_uri = WATTIO_SIREN_URI
         _LOGGER.debug("Status change for %s - %s", str(ieee), str(status))
-        _LOGGER.debug("Peticion API")
         uri = wattio_uri.format(str(ieee), str(status))
         response = await self.async_api_request("put", uri)
         if response == 1:

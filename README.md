@@ -20,6 +20,19 @@ You can use this devices via _HomeKit_ using _Home Assistant's HomeKit bridge_ (
 
 Please check [CHANGELOG.md](https://github.com/dmoranf/home-assistant-wattio/blob/main/custom_components/wattio/CHANGELOG.md) for full details.
 
+## [0.2.10] - 2021-05-19
+
+Tested on HASS 2021.5.4
+
+### Fixed
+
+- #9 Fixed async errors on device status set commands on Hass >2021.4.3
+- Restored debugging messages for security devices
+
+### Changed
+
+- Migrated all methors from requests to async aiohttp
+
 ## [0.2.9] - 2021-04-14
 
 ### Fixed
