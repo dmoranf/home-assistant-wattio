@@ -6,6 +6,6 @@
    "requirements": [],
    "dependencies": ["configurator", "http"],
    "after_dependencies": [], 
-   "version": "0.2.9",
+   "version": "0.2.10",
    "codeowners": ["@dmoranf"]
 }

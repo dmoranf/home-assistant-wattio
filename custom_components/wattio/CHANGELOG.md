@@ -9,7 +9,20 @@ It seems that Wattio has shutted down the forums, so, feel free to send any comm
 ## TODO
 
 - Configuration via Config Flow
-- I/O Warning in HASS when triggering switch ON/OFF related to async requests
+- Check security devices issues
+
+## [0.2.10] - 2021-05-19
+
+Tested on HASS 2021.5.4
+
+### Fixed
+
+- #9 Fixed async errors on device status set commands on Hass >2021.4.3
+- Restored debugging messages for security devices
+
+### Changed
+
+- Migrated all methors from requests to async aiohttp
 
 ## [0.2.9] - 2021-04-14
 
