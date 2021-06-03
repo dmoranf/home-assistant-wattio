@@ -2,7 +2,7 @@
 from homeassistant.const import TEMP_CELSIUS
 
 DOMAIN = "wattio"
-VERSION = "0.2.10"
+VERSION = "0.2.11"
 
 ATTR_ACCESS_TOKEN = "access_token"
 ATTR_CLIENT_ID = "client_id"
@@ -52,6 +52,7 @@ ICON_SIREN = "mdi:alert"
 ICON_SECURITY = "mdi:security"
 
 CONF_EXCLUSIONS = "sensor_exclude"
+CONF_OFFSETS = "sensor_offsets"
 
 # Climate
 CONF_MAX_TEMP = "therm_max_temp"

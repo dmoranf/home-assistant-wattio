@@ -11,6 +11,16 @@ It seems that Wattio has shutted down the forums, so, feel free to send any comm
 - Configuration via Config Flow
 - Check security devices issues
 
+## [0.2.11] - 2021-06-03
+
+### Added
+
+- Offset support for power sensors
+
+### Fixed
+
+- Security device status not getting current state from Wattio API (#9)
+
 ## [0.2.10] - 2021-05-19
 
 Tested on HASS 2021.5.4

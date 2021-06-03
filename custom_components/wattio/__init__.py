@@ -33,6 +33,7 @@ from .const import (
     ATTR_CLIENT_ID,
     ATTR_CLIENT_SECRET,
     ATTR_LAST_SAVED_AT,
+    CONF_OFFSETS,
     CONF_EXCLUSIONS,
     CONF_SECURITY,
     CONF_SECURITY_INTERVAL,
@@ -66,7 +67,8 @@ CONFIG_SCHEMA = vol.Schema(
         DOMAIN: vol.Schema(
             {vol.Optional(CONF_SECURITY, default=False): cv.boolean,
              vol.Optional(CONF_SECURITY_INTERVAL, default=None): cv.positive_int,
-             vol.Optional(CONF_EXCLUSIONS, default=[]): vol.All(cv.ensure_list, [cv.string])},
+             vol.Optional(CONF_EXCLUSIONS, default=[]): vol.All(cv.ensure_list, [cv.string]),
+             vol.Optional(CONF_OFFSETS, default=[]): vol.All(cv.ensure_list)},
             extra=vol.ALLOW_EXTRA,
         )
     },
@@ -185,6 +187,7 @@ def setup(hass, config):
         hass.data[DOMAIN]["security_enabled"] = security_enabled
         hass.data[DOMAIN][CONF_EXCLUSIONS] = config[DOMAIN].get(
             CONF_EXCLUSIONS)
+        hass.data[DOMAIN][CONF_OFFSETS] = config[DOMAIN].get(CONF_OFFSETS)
         # Create Updater Object
         for platform in PLATFORMS:
             load_platform(hass, platform, DOMAIN, {}, config)
