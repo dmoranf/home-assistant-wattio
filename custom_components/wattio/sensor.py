@@ -10,10 +10,20 @@ from homeassistant.helpers.entity import Entity
 
 from . import WattioDevice
 
-from .const import CONF_EXCLUSIONS, DOMAIN, ICON, MEASUREMENT, SENSORS
+from .const import CONF_EXCLUSIONS, CONF_OFFSETS, DOMAIN, ICON, MEASUREMENT, SENSORS
 
 _LOGGER = logging.getLogger(__name__)
 
+
+def get_device_offset(offset, ieee, name):
+    for value in offset:
+        if value["sensor_ieee"] == ieee and value["sensor_name"].lower() == name.lower():
+            _LOGGER.debug("OFFSET of type %s and value %s configured for %s - %s", str(
+                value["offset_type"]), str(value["sensor_offset"]), str(ieee), str(name))
+            offsettype = value["offset_type"]
+            offsetvalue = value["sensor_offset"]
+            return [offsettype, offsetvalue]
+    return None
 
 
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
@@ -30,8 +40,16 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
             else:
                 channel = None
             if device["ieee"] in hass.data[DOMAIN][CONF_EXCLUSIONS]:
-                _LOGGER.error("Excluding device with IEEE %s", hass.data[DOMAIN][CONF_EXCLUSIONS])
+                _LOGGER.error("Excluding device with IEEE %s",
+                              hass.data[DOMAIN][CONF_EXCLUSIONS])
             else:
+                offset = None
+                if hass.data[DOMAIN][CONF_OFFSETS]:
+                    _LOGGER.debug("OFFSETs configured")
+                    offset = get_device_offset(
+                        hass.data[DOMAIN][CONF_OFFSETS], device["ieee"], device["name"])
+                else:
+                    _LOGGER.debug("No OFFSETS configured")
                 devices.append(
                     WattioSensor(
                         device["name"],
@@ -39,7 +57,8 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
                         MEASUREMENT[device["type"]],
                         ICON[device["type"]],
                         device["ieee"],
-                        channel,
+                        offset,
+                        channel
                     )
                 )
                 _LOGGER.debug("Adding device: %s", device["name"])
@@ -52,7 +71,7 @@ class WattioSensor(WattioDevice, Entity):
 
     # pylint: disable=too-many-instance-attributes
 
-    def __init__(self, name, devtype, measurement, icon, ieee, channel=None):
+    def __init__(self, name, devtype, measurement, icon, ieee, offset, channel=None):
         """Initialize the sensor."""
         self._pre = "s_"
         self._name = name
@@ -65,6 +84,12 @@ class WattioSensor(WattioDevice, Entity):
         self._battery = None
         self._data = None
         self._available = 0
+        self._offsetvalue = None
+        self._offsettype = None
+
+        if offset is not None:
+            self._offsetvalue = offset[1]
+            self._offsettype = offset[0]
         if channel is not None:
             self._channel = channel - 1
 
@@ -76,7 +101,8 @@ class WattioSensor(WattioDevice, Entity):
     @property
     def available(self):
         """Return availability."""
-        _LOGGER.debug("Device %s - availability: %s", self._name, self._available)
+        _LOGGER.debug("Device %s - availability: %s",
+                      self._name, self._available)
         return True if self._available == 1 else False
 
     @property
@@ -114,6 +140,16 @@ class WattioSensor(WattioDevice, Entity):
             return battery_level
         return False
 
+    def get_calculated_sensorvalue(self, sensorvalue):
+        originalvalue = sensorvalue
+        if self._offsettype == 1 and sensorvalue == self._offsetvalue:
+            sensorvalue = 0
+        elif self._offsettype == 2 and sensorvalue >= self._offsetvalue:
+            sensorvalue = sensorvalue - self._offsetvalue
+        _LOGGER.debug("Original sensor value: %s - Offset sensor value: %s",
+                      str(originalvalue), str(sensorvalue))
+        return sensorvalue
+
     async def async_update(self):
         """Update sensor data."""
         self._data = self.hass.data[DOMAIN]["data"]
@@ -125,6 +161,10 @@ class WattioSensor(WattioDevice, Entity):
                     self._available = 1
                     if self._channel is not None and self._devtype == "bat":
                         sensorvalue = device["status"]["consumption"][self._channel]
+                        if self._offsetvalue is not None and self._offsettype is not None:
+                            sensorvalue = self.get_calculated_sensorvalue(
+                                sensorvalue)
+
                     elif self._devtype == "therm":
                         sensorvalue = device["status"]["current"]
                     elif self._devtype == "motion":
