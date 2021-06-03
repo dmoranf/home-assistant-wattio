@@ -26,6 +26,10 @@ Please check [CHANGELOG.md](https://github.com/dmoranf/home-assistant-wattio/blo
 
 - Offset support for power sensors
 
+### Fixed
+
+- Security device status not getting current state from Wattio API (#9)
+
 ## [0.2.10] - 2021-05-19
 
 Tested on HASS 2021.5.4
