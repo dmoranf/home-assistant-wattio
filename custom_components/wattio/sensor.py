@@ -18,11 +18,10 @@ _LOGGER = logging.getLogger(__name__)
 def get_device_offset(offset, ieee, name):
     for value in offset:
         if value["sensor_ieee"] == ieee and value["sensor_name"].lower() == name.lower():
-            _LOGGER.debug("OFFSET of type %s and value %s configured for %s - %s", str(
-                value["offset_type"]), str(value["sensor_offset"]), str(ieee), str(name))
-            offsettype = value["offset_type"]
+            _LOGGER.debug("OFFSET value %s configured for %s - %s",
+                          str(value["sensor_offset"]), str(ieee), str(name))
             offsetvalue = value["sensor_offset"]
-            return [offsettype, offsetvalue]
+            return offsetvalue
     return None
 
 
@@ -85,11 +84,9 @@ class WattioSensor(WattioDevice, Entity):
         self._data = None
         self._available = 0
         self._offsetvalue = None
-        self._offsettype = None
 
         if offset is not None:
-            self._offsetvalue = offset[1]
-            self._offsettype = offset[0]
+            self._offsetvalue = offset
         if channel is not None:
             self._channel = channel - 1
 
@@ -142,10 +139,9 @@ class WattioSensor(WattioDevice, Entity):
 
     def get_calculated_sensorvalue(self, sensorvalue):
         originalvalue = sensorvalue
-        if self._offsettype == 1 and sensorvalue == self._offsetvalue:
+        sensorvalue = sensorvalue - self._offsetvalue
+        if sensorvalue < 0:
             sensorvalue = 0
-        elif self._offsettype == 2 and sensorvalue >= self._offsetvalue:
-            sensorvalue = sensorvalue - self._offsetvalue
         _LOGGER.debug("Original sensor value: %s - Offset sensor value: %s",
                       str(originalvalue), str(sensorvalue))
         return sensorvalue
@@ -161,7 +157,7 @@ class WattioSensor(WattioDevice, Entity):
                     self._available = 1
                     if self._channel is not None and self._devtype == "bat":
                         sensorvalue = device["status"]["consumption"][self._channel]
-                        if self._offsetvalue is not None and self._offsettype is not None:
+                        if self._offsetvalue is not None:
                             sensorvalue = self.get_calculated_sensorvalue(
                                 sensorvalue)
 

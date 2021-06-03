@@ -20,7 +20,13 @@ You can use this devices via _HomeKit_ using _Home Assistant's HomeKit bridge_ (
 
 Please check [CHANGELOG.md](https://github.com/dmoranf/home-assistant-wattio/blob/main/custom_components/wattio/CHANGELOG.md) for full details.
 
-## [0.2.11] - 2021-06-02
+## [0.2.12] - 2021-06-03
+
+### Changed
+
+- Simple offset support based on #13 comments
+
+## [0.2.11] - 2021-06-03
 
 ### Added
 
@@ -113,20 +119,19 @@ wattio:
         'sensor_iee': 'ieee',
         'sensor_name': 'sensor_name',
         'sensor_offset': 30,
-        'offset_type': 1,
       },
     ]
 ```
 
 Vars:
 
-| Var                 | Description                                                                                                                        |
-| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| _scan_interval_     | OPTIONAL - Time (in seconds) between data updates , defaults to 30 seconds                                                         |
-| _security_          | OPTIONAL - Enable or disable security devices, defaults to False                                                                   |
-| _security_interval_ | OPTIONAL - Time (in seconds) between security devices data updates, defaults to _scan_interval_                                    |
-| _sensor_exclude_    | OPTIONAL - List with IEEEs to exclude, for example: ["ieee1","ieee2"]                                                              |
-| _sensor_offsets_    | OPTIONAL - List with offsets for sensors (Type 1 : offset only for equal value, Type 1: offset if value equal or greater than ...) |
+| Var                 | Description                                                                                     |
+| ------------------- | ----------------------------------------------------------------------------------------------- |
+| _scan_interval_     | OPTIONAL - Time (in seconds) between data updates , defaults to 30 seconds                      |
+| _security_          | OPTIONAL - Enable or disable security devices, defaults to False                                |
+| _security_interval_ | OPTIONAL - Time (in seconds) between security devices data updates, defaults to _scan_interval_ |
+| _sensor_exclude_    | OPTIONAL - List with IEEEs to exclude, for example: ["ieee1","ieee2"]                           |
+| _sensor_offsets_    | OPTIONAL - List with offsets for sensors                                                        |
 
 ### Adittional steps
 

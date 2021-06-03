@@ -11,6 +11,12 @@ It seems that Wattio has shutted down the forums, so, feel free to send any comm
 - Configuration via Config Flow
 - Check security devices issues
 
+## [0.2.12] - 2021-06-03
+
+### Changed
+
+- Simple offset support based on #13 comments
+
 ## [0.2.11] - 2021-06-03
 
 ### Added

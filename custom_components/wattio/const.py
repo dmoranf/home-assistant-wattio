@@ -2,7 +2,7 @@
 from homeassistant.const import TEMP_CELSIUS
 
 DOMAIN = "wattio"
-VERSION = "0.2.11"
+VERSION = "0.2.12"
 
 ATTR_ACCESS_TOKEN = "access_token"
 ATTR_CLIENT_ID = "client_id"
@@ -72,5 +72,6 @@ WATTIO_THERMIC_MODE_URI = "https://api.wattio.com/public/v1/appliances/therm/{}/
 WATTIO_THERMIC_TEMP_URI = "https://api.wattio.com/public/v1/appliances/therm/{}/target/{}"
 WATTIO_SEC_STATUS_URI = "https://api.wattio.com/public/v1/security/{}/{}"
 WATTIO_SEC_SET_URI = "https://api.wattio.com/public/v1/security/{}/{}/{}"
+WATTIO_SEC_MODE = "https://api.wattio.com/public/v1/security/{}"
 WATTIO_AUTH_URI = "https://api.wattio.com/public/oauth2/authorize"
 WATTIO_TOKEN_URI = "https://api.wattio.com/public/oauth2/token"
