@@ -20,6 +20,13 @@ You can use this devices via _HomeKit_ using _Home Assistant's HomeKit bridge_ (
 
 Please check [CHANGELOG.md](https://github.com/dmoranf/home-assistant-wattio/blob/main/custom_components/wattio/CHANGELOG.md) for full details.
 
+## [0.2.13] - 2021-06-04
+
+### Fixed
+
+- Reuploaded fix for #9
+- Minor fix: CONF_SECURITY_INTERVAL variable is optional again
+
 ## [0.2.12] - 2021-06-03
 
 ### Changed
@@ -113,7 +120,7 @@ wattio:
   security: true
   security_interval: 300
   sensor_exclude: ['ieee1']
-  sensor_offsets:
+  sensor_offsets: >
     [
       {
         'sensor_iee': 'ieee',

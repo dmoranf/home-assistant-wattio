@@ -11,6 +11,14 @@ It seems that Wattio has shutted down the forums, so, feel free to send any comm
 - Configuration via Config Flow
 - Check security devices issues
 
+## [0.2.13] - 2021-06-04
+
+### Fixed
+
+- Reuploaded fix for #9
+- Minor fix: CONF_SECURITY_INTERVAL variable is optional again
+- More verbosity for security debugging events
+
 ## [0.2.12] - 2021-06-03
 
 ### Changed

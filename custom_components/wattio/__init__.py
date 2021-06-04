@@ -67,7 +67,7 @@ CONFIG_SCHEMA = vol.Schema(
     {
         DOMAIN: vol.Schema(
             {vol.Optional(CONF_SECURITY, default=False): cv.boolean,
-             vol.Optional(CONF_SECURITY_INTERVAL, default=None): cv.positive_int,
+             vol.Optional(CONF_SECURITY_INTERVAL, default=0): cv.positive_int,
              vol.Optional(CONF_EXCLUSIONS, default=[]): vol.All(cv.ensure_list, [cv.string]),
              vol.Optional(CONF_OFFSETS, default=[]): vol.All(cv.ensure_list)},
             extra=vol.ALLOW_EXTRA,
@@ -81,7 +81,7 @@ def setup(hass, config):
     """Configure Wattio platform."""
     update_interval = config[DOMAIN].get(CONF_SCAN_INTERVAL)
     security_enabled = config[DOMAIN].get(CONF_SECURITY)
-    if config[DOMAIN].get(CONF_SECURITY_INTERVAL) is None:
+    if config[DOMAIN].get(CONF_SECURITY_INTERVAL) == 0:
         security_interval = update_interval
     else:
         security_interval = config[DOMAIN].get(CONF_SECURITY_INTERVAL)
@@ -98,14 +98,14 @@ def setup(hass, config):
         for device in hass.data[DOMAIN]["devices"]:
             if device["type"] in SECURITY:
                 _LOGGER.debug(
-                    "Scheduled device security update running for %s - %s",
+                    "Scheduled device SECURITY update running for %s - %s",
                     device["type"],
                     device["ieee"],
                 )
                 device_id = "sec_" + device["ieee"]
-                hass.data[DOMAIN][device_id] = apidata.async_get_security_device_status(
+                hass.data[DOMAIN][device_id] = asyncio.run_coroutine_threadsafe(apidata.async_get_security_device_status(
                     device["type"], device["ieee"]
-                )
+                ), hass.loop).result()
                 async_dispatcher_send(hass, DATA_UPDATED.format(device_id))
 
     def poll_wattio_update(event_time):
@@ -479,7 +479,7 @@ class wattioApi:
         """Gets Security appliances status."""
         uri = WATTIO_SEC_STATUS_URI.format(str(devtype), str(ieee))
         response = await self.async_api_request("get", uri, True)
-        _LOGGER.debug("Wattio SECURITY STATUS data: "+str(response))
+        _LOGGER.debug("Wattio SECURITY STATUS data for "+str(ieee) + " - " + str(devtype) + " : "+str(response))
         return response
 
     async def async_set_security_device_status(self, devtype, ieee, status):
